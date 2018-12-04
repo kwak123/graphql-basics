@@ -32,8 +32,16 @@ TODO: INSERT GIF
 ## GraphQL Highlights
 
 * Specific fetching
-* Singular endpoint
-* Self documenting
+* Singular, semi-self-documenting endpoint
+* Built-in validation and response handling
+
+^ Which brings us to some of the best things that GraphQL offers developers. We'll break out of the serious mold now, and just start looking at what we get to work with, and that starts with knowing where GraphQL leaves us.
+
+^ First thing's first, what does GraphQL stand for? Query Language, but what exactly does that mean? It's confusing, you imagine it's like SQL, and it kinda is, but really, GraphQL is just a way of asking for things explicitly. Now knowing what you want to ask for is a complicated thing. Let's just reflect on that concept. There's two big concerns with getting data in the REST spec, first is having to create new endpoints for any new piece of data, second is all the the validation that has to go in to resolving only what we want if we want that data to be configurable. Thankfully, GraphQL handles both of these big concerns.
+
+^ First, we only have to use one end point now. GraphQL servers will receive and respond along one endpoint. Don't worry too much about the self-documenting aspect now, we'll get to that in the live coding bit.
+
+^ Second, we get built-in validation and response handling. Specifically, all we need to teach GraphQL how to do is how to fetch data, GraphQL will take care of parsing responses, making database or other API requests, and responding to the incoming request.
 
 ---
 
