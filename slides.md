@@ -2,17 +2,20 @@ slidenumbers: true
 slidecount: true
 footer: [@kwakles124](https://twitter.com/kwakles124)
 theme: GraphQL
+build-lists: true
 
 ## GraphQL for Real People
 Samuel Kwak
 Web[@BigNerdRanch](https://twitter.com/bignerdranch)
 
 ^ Hello, my name is Samuel Kwak, and I'm a web developer at Big Nerd Ranch.
+
 ^ Today, we're going to do yet another Intro to GraphQL talk... except this time, we're going to approach it from the every day developer's perspective, and why adopting GraphQL doesn't have to be a scary conversation.
-^ To be noted, we're not going to talk too much about what GraphQL exactly is, instead we're going to focus on how we can leverage it as a tool for rapid, iterative development.
+
+^ To be noted, we're not going to talk too much about what GraphQL exactly is, instead we're going to focus on learning and applying the basic concepts of GraphQL.
 
 ---
-[.build-lists: true]
+
 ## Why GraphQL?
 
 * Too much data
@@ -27,8 +30,6 @@ TODO: INSERT GIF
 ^ Previous solutions to the above were to try and and reduce data resolution by exposing more and more endpoints, leading to endpoint hell. On top of that, each of these endpoints need documenting, validation checks, pagination, etc, the developer overhead stacks up exponentially.
 
 ---
-
-[.build-lists: true]
 ## GraphQL Highlights
 
 * Specific fetching
@@ -49,8 +50,8 @@ TODO: INSERT GIF
 
 ---
 
-[.build-lists: true]
 ## GraphQL's Components
+
 * Queries -> What's the count for fiction/nonfiction?
 * Mutations -> Let's order more Harry Potter books.
 * Fragments -> Get the author/genre for these books.
@@ -75,11 +76,119 @@ TODO: INSERT GIF
 
 ---
 
-## Queries
+[.build-lists: false]
+
+## Language Concepts
+
+```ruby
+type Book {
+  id: ID!
+  title: String
+  author: [String]
+}
+```
+
+^ Here's our first real part of GraphQL. At a glance, this looks a bit like a protobuf or a struct, or maybe even a schema and you'd be right. This is called Schema Definition Language, and we're using it to define a type definition. It's like the legalese of GraphQL, you define your contracts that the API will follow using this language. This little snippet contains a few important pieces of GraphQL.
 
 ---
 
-## Scalars/Vectors
+[.build-lists: false]
+[.code-highlight: 2]
+
+## Language Concepts
+
+```ruby
+type Book {
+  id: ID!
+  title: String
+  author: [String]
+}
+```
+
+* Nullability
+
+^ First is this idea of nullability. This is exactly the concept of null that you probably have, that in some object, that piece of data is missing, or more precisely, does not exist. The exclamation point lets GraphQL know that contractually, this field cannot be blank, and if it is blank, there's a big problem.
+
+---
+
+[.build-lists: false]
+[.code-highlight: 1, 3]
+
+## Language Concepts
+
+```ruby
+type Book {
+  id: ID!
+  title: String
+  author: [String]
+}
+```
+
+* Nullability
+* Types/Scalars
+
+^ Next is the concept of scalars and types. Types are data structures that contain data inside them, and scalars are the actual data itself, the piece that can't be described any smaller than it actually is. A book can have all these attributes, but when we look at the title, there's really only one title. Types are like objects, Scalars are like primitives.
+
+---
+
+[.build-lists: false]
+[.code-highlight: 4]
+
+## Language Concepts
+
+```ruby
+type Book {
+  id: ID!
+  title: String
+  author: [String]
+}
+```
+
+* Nullability
+* Types/Scalars
+* Lists
+
+^ Last is the concept of lists. We mentioned that scalars are the most primitive unit in GraphQL, but lists are just above that. Anything can be wrapped in a list, all you're doing is informing the contract that there is a variable number of this item.
+
+---
+
+## Combining Concepts
+
+Nullability, Types/Scalars, Lists
+
+```ruby
+type Author {
+  name: String!
+}
+
+type Book {
+  authors: [Author!]!
+  related: [Book]
+}
+```
+
+^ You can combine these three aspects and create just about anything. For instance, the Book type can have lists of Author types to query for, and even refer to itself in its type definition. Nullability can be applied at many levels, including within lists or even the list itself.
+
+^ Trivia, what _can_ the authors key return?
+
+---
+
+## Queries
+
+```ruby
+type Query {
+  getBooks: [Book]
+  getAuthors: [Author]
+  getBookByTitle(title: String!): Book
+  getBooksByAuthor(author: Author!): [Book]
+}
+```
+
+^ Things to notice here:
+
+^ Variable Querying, where nullability can still apply. You can search for things by variable, or even by other types. For something like JavaScript, duck typing comes into play here, but there are ways to decide how an object given to GraphQL is resolved.
+
+^ A GraphQL Query is a built-in type that must be called such. It still obeys the SDL, getBooks is just some attribute of the Query type that will return you a list of Books.
 
 ---
 
