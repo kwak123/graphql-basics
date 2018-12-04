@@ -63,11 +63,19 @@ TODO: INSERT GIF
 
 ^ Queries are the bread and butter of a GraphQL server. They're GET requests, pretty much just a read operation.
 
-^ Mutations are like POST requests, they're requests to update
+^ Mutations are like POST requests, they're requests to update the server in any way.
+
+^ Fragments are a way of asking the same question for many things. There are a few ways to do fragments, such as inline fragments vs declared fragments.
+
+^ Interfaces are straight from most OOP languages, anything that implements an interface must meet that interface's contract
+
+^ Unions are similar to interfaces, but instead of necessarily declaring a contract, you're more like associating them as synonyms.
+
+^ Subscriptions are a little different. They aren't necessarily a part of the GraphQL spec, but most GraphQL implementations will take advantage of a subscription based model. We won't worry too much about this topic, just know that it's out there.
 
 ---
 
-# And with some other body copy
+## Resources
 
-> The best way to predict the future is to invent it
--- Alan Kay
+[How To GraphQL](https://www.howtographql.com)
+[GitHub for Slides/Server](https://github.com/kwak123/graphql-basics)
