@@ -55,7 +55,7 @@ TODO: INSERT GIF
 * Mutations -> Let's order more Harry Potter books.
 * Fragments -> Get the author/genre for these books.
 * Interfaces -> Books have title, author, and genre.
-* Union -> These things are all books.
+* Unions -> These things are all books.
 
 ~ Subscriptions -> Tell me when new books arrive.
 
@@ -72,6 +72,36 @@ TODO: INSERT GIF
 ^ Unions are similar to interfaces, but instead of necessarily declaring a contract, you're more like associating them as synonyms.
 
 ^ Subscriptions are a little different. They aren't necessarily a part of the GraphQL spec, but most GraphQL implementations will take advantage of a subscription based model. We won't worry too much about this topic, just know that it's out there.
+
+---
+
+## Queries
+
+---
+
+## Scalars/Vectors
+
+---
+
+## Mutations
+
+---
+
+## Fragments
+
+---
+
+## Interfaces
+
+---
+
+## Unions
+
+---
+
+## Live Coding!
+
+^ At this point, if you're reviewing the slides, please check out the example-server directory to check out some example steps.
 
 ---
 
