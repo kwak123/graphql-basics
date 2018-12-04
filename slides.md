@@ -39,14 +39,31 @@ TODO: INSERT GIF
 
 ^ First thing's first, what does GraphQL stand for? Query Language, but what exactly does that mean? It's confusing, you imagine it's like SQL, and it kinda is, but really, GraphQL is just a way of asking for things explicitly. Now knowing what you want to ask for is a complicated thing. Let's just reflect on that concept. There's two big concerns with getting data in the REST spec, first is having to create new endpoints for any new piece of data, second is all the the validation that has to go in to resolving only what we want if we want that data to be configurable. Thankfully, GraphQL handles both of these big concerns.
 
-^ First, we only have to use one end point now. GraphQL servers will receive and respond along one endpoint. Don't worry too much about the self-documenting aspect now, we'll get to that in the live coding bit.
+^ First, we only have to use one end point now. GraphQL servers will receive and respond along one endpoint. This GraphQL endpoint doesn't need to response to all the various request types, the 2 that you really need to work with are GET and POST requests. Don't worry too much about the self-documenting aspect now, we'll get to that in the live coding bit.
 
 ^ Second, we get built-in validation and response handling. Specifically, all we need to teach GraphQL how to do is how to fetch data, GraphQL will take care of parsing responses, making database or other API requests, and responding to the incoming request.
 
+^ Personally, I've found it's easier to understand GraphQL by applying it to a simile. The REST spec is sort of like the Dewey decimal system, a great, rigid structure for quickly locating books on a certain topic. Want to add a new topic, you'd need a new number, etc. GraphQL is more like the librarian, you approach GraphQL with your questions or requests, they go and fulfill it and come back to you.
+
+^ Questions?
+
 ---
 
-> The best way to predict the future is to invent it
--- Alan Kay
+[.build-lists: true]
+## GraphQL's Components
+* Queries -> What's the count for fiction/nonfiction?
+* Mutations -> Let's order more Harry Potter books.
+* Fragments -> Get the author/genre for these books.
+* Interfaces -> Books have title, author, and genre.
+* Union -> These things are all books.
+
+~ Subscriptions -> Tell me when new books arrive.
+
+^ There's 5 big basic parts of GraphQL: Queries, Mutations, Fragments, Interfaces, and Unions. Sticking with our librarian theme, we can compare our requests vs how we might ask a librarin
+
+^ Queries are the bread and butter of a GraphQL server. They're GET requests, pretty much just a read operation.
+
+^ Mutations are like POST requests, they're requests to update
 
 ---
 
