@@ -192,7 +192,46 @@ type Query {
 
 ---
 
+## Queries
+
+```ruby
+type Query {
+  getBooks: [Book]
+  getAuthors: [Author]
+  getBookByTitle(title: String!): Book
+  getBooksByAuthor(author: Author!): [Book]
+}
+```
+
+^ Things to notice here:
+
+^ Variable Querying, where nullability can still apply. You can search for things by variable, or even by other types. For something like JavaScript, duck typing comes into play here, but there are ways to decide how an object given to GraphQL is resolved.
+
+^ A GraphQL Query is a built-in type that must be called such. It still obeys the SDL, getBooks is just some attribute of the Query type that will return you a list of Books.
+
+---
+
+## Live Coding!
+
+At this point, if you're reviewing the slides, please check out the example-server branches to see where we're at. You can always refer back to the master branch for the complete code.
+
+---
+
 ## Mutations
+
+```ruby
+type Mutation {
+  deleteBook(id: ID!): Book
+  addBook(book: Book): Book
+  addAuthor(author: Author): Author
+}
+```
+
+---
+
+## Live Coding!
+
+At this point, if you're reviewing the slides, please check out the example-server branches to see where we're at. You can always refer back to the master branch for the complete code.
 
 ---
 
@@ -200,7 +239,19 @@ type Query {
 
 ---
 
+## Live Coding!
+
+At this point, if you're reviewing the slides, please check out the example-server branches to see where we're at. You can always refer back to the master branch for the complete code.
+
+---
+
 ## Interfaces
+
+---
+
+## Live Coding!
+
+At this point, if you're reviewing the slides, please check out the example-server branches to see where we're at. You can always refer back to the master branch for the complete code.
 
 ---
 
@@ -210,7 +261,7 @@ type Query {
 
 ## Live Coding!
 
-^ At this point, if you're reviewing the slides, please check out the example-server directory to check out some example steps.
+At this point, if you're reviewing the slides, please check out the example-server branches to see where we're at. You can always refer back to the master branch for the complete code.
 
 ---
 
