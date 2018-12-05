@@ -179,16 +179,17 @@ type Book {
 type Query {
   getBooks: [Book]
   getAuthors: [Author]
-  getBookByTitle(title: String!): Book
-  getBooksByAuthor(author: Author!): [Book]
 }
 ```
 
-^ Things to notice here:
+* Query is a default GraphQL Type
+* Obeys the same rules as other type defs
 
-^ Variable Querying, where nullability can still apply. You can search for things by variable, or even by other types. For something like JavaScript, duck typing comes into play here, but there are ways to decide how an object given to GraphQL is resolved.
+^ Finally! Here's our first bread and butter piece of GraphQL. Can anyone quickly try and point out anything interesting here?
 
-^ A GraphQL Query is a built-in type that must be called such. It still obeys the SDL, getBooks is just some attribute of the Query type that will return you a list of Books.
+^ The first interesting point is that Query is simply another GraphQL type def, except it has the added responsiblity of being a default (and required) type def.
+
+^ Because a Query is just a type definition, it still obeys the SDL, getBooks is just some attribute of the Query type that will return you a list of Books. Here's where we really see SDL is a contract language only. Looking at the getBooks gives you that gut feeling that it somehow is responsible for getting books, but really it's just a data attribute that's part of the type Query, that if referenced, will return you a list of books.
 
 ---
 
@@ -203,11 +204,11 @@ type Query {
 }
 ```
 
-^ Things to notice here:
+* Can query by variable
+* Can also query by existing types
 
 ^ Variable Querying, where nullability can still apply. You can search for things by variable, or even by other types. For something like JavaScript, duck typing comes into play here, but there are ways to decide how an object given to GraphQL is resolved.
 
-^ A GraphQL Query is a built-in type that must be called such. It still obeys the SDL, getBooks is just some attribute of the Query type that will return you a list of Books.
 
 ---
 
