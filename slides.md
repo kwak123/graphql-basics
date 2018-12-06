@@ -10,9 +10,9 @@ Web[@BigNerdRanch](https://twitter.com/bignerdranch)
 
 ^ Hello, my name is Samuel Kwak, and I'm a web developer at Big Nerd Ranch.
 
-^ Today, we're going to do yet another Intro to GraphQL talk... except this time, we're going to approach it from the every day developer's perspective, and why adopting GraphQL doesn't have to be a scary conversation.
+^ Today, we're going to do yet another Intro to GraphQL talk... except this time, we're going to approach it from the every day developer's perspective, and why adopting GraphQL doesn't have to be a scary conversation. We're not going to talk too much about the big picture of what GraphQL exactly is, instead we're going to focus on learning and applying the basic concepts of GraphQL.
 
-^ To be noted, we're not going to talk too much about what GraphQL exactly is, instead we're going to focus on learning and applying the basic concepts of GraphQL.
+^ Before we start, due to time constraints, we have a couple options we can take. There are some slides describing how to use GraphQL, but there is also an option to go through it with live coding. If we do live coding, we can do it interspersed with the slides, or we can go through the slides, then do some live code together.
 
 ---
 
@@ -42,9 +42,9 @@ TODO: INSERT GIF
 
 ^ First, we only have to use one end point now. GraphQL servers will receive and respond along one endpoint. This GraphQL endpoint doesn't need to response to all the various request types, the 2 that you really need to work with are GET and POST requests. Don't worry too much about the self-documenting aspect now, we'll get to that in the live coding bit.
 
-^ Second, we get built-in validation and response handling. Specifically, all we need to teach GraphQL how to do is how to fetch data, GraphQL will take care of parsing responses, making database or other API requests, and responding to the incoming request.
+^ Second, we get built-in validation and response handling. Specifically, all we need to teach GraphQL how to do is the data should look, GraphQL will take care of parsing responses, validating, and responding to the incoming request.
 
-^ Personally, I've found it's easier to understand GraphQL by applying it to a simile. The REST spec is sort of like the Dewey decimal system, a great, rigid structure for quickly locating books on a certain topic. Want to add a new topic, you'd need a new number, etc. GraphQL is more like the librarian, you approach GraphQL with your questions or requests, they go and fulfill it and come back to you.
+^ Personally, I've found it's easier to understand GraphQL by applying it to a simile. The REST spec is sort of like the Dewey decimal system, a great, rigid structure for quickly locating books on a certain topic. Want to add a new topic, you'd need a new number, etc. GraphQL is more like the librarian, you approach GraphQL with your requests, and they make sure it's answered reasonably.
 
 ^ Questions?
 
@@ -57,10 +57,9 @@ TODO: INSERT GIF
 * Fragments -> Get the author/genre for these books.
 * Interfaces -> Books have title, author, and genre.
 * Unions -> These things are all books.
+* _Subscriptions -> Tell me when new books arrive._
 
-~ Subscriptions -> Tell me when new books arrive.
-
-^ There's 5 big basic parts of GraphQL: Queries, Mutations, Fragments, Interfaces, and Unions. Sticking with our librarian theme, we can compare our requests vs how we might ask a librarin
+^ There's 5 big basic parts of GraphQL: Queries, Mutations, Fragments, Interfaces, and Unions. Sticking with our librarian theme, we can compare our requests vs how we might ask a librarian
 
 ^ Queries are the bread and butter of a GraphQL server. They're GET requests, pretty much just a read operation.
 
@@ -84,7 +83,7 @@ TODO: INSERT GIF
 type Book {
   id: ID!
   title: String
-  author: [String]
+  authors: [String]
 }
 ```
 
@@ -101,7 +100,7 @@ type Book {
 type Book {
   id: ID!
   title: String
-  author: [String]
+  authors: [String]
 }
 ```
 
@@ -120,7 +119,7 @@ type Book {
 type Book {
   id: ID!
   title: String
-  author: [String]
+  authors: [String]
 }
 ```
 
@@ -140,7 +139,7 @@ type Book {
 type Book {
   id: ID!
   title: String
-  author: [String]
+  authors: [String]
 }
 ```
 
@@ -193,6 +192,8 @@ type Query {
 
 ---
 
+[.code-highlight: 4]
+
 ## Queries
 
 ```ruby
@@ -200,15 +201,90 @@ type Query {
   getBooks: [Book]
   getAuthors: [Author]
   getBookByTitle(title: String!): Book
-  getBooksByAuthor(author: Author!): [Book]
 }
 ```
 
 * Can query by variable
-* Can also query by existing types
 
-^ Variable Querying, where nullability can still apply. You can search for things by variable, or even by other types. For something like JavaScript, duck typing comes into play here, but there are ways to decide how an object given to GraphQL is resolved.
+^ You can query by variables, but nullability will still apply. For something like JavaScript, duck typing may comes into play here, but there are ways to decide how an object given to GraphQL is resolved.
 
+---
+
+[.code-highlight: 1-3, 9]
+
+## Queries
+
+```ruby
+input AuthorInput {
+  name: String!
+}
+
+type Query {
+  getBooks: [Book]
+  getAuthors: [Author]
+  getBookByTitle(title: String!): Book
+  getBooksByAuthor(authorInput: AuthorInput!): [Book]
+}
+```
+
+* Can query by variable
+* Can also query by input
+
+^ Searching using types requires you to actually use inputs; types are not the same, though very similar. The big difference is that inputs can only have scalars, other inputs, and lists of either of those as their fields. They cannot have types as a field (not super sure why)
+
+---
+
+## Consuming Queries
+
+```ruby
+type Author {
+  name: String!
+}
+
+type Book {
+  title: String!
+  authors: [Author]
+}
+
+type Query {
+  getBookByTitle(title: String!): Book
+}
+
+# On Client
+query {
+  getBookByTitle(title: "Something") {
+    title
+  }
+}
+```
+
+^ Now we have our first glance at what GraphQL looks like on the client side... and it is dead simple. You simply call the desired query, then list off scalar fields that are part of the returned type that you wish to get data for.
+
+---
+
+## Consuming Queries
+
+```ruby
+type Author {
+  name: String!
+}
+
+type Query {
+  getBookByTitle(title: String!): Book
+}
+
+# On Client
+query {
+  getBookByTitle(title: "Something") {
+    title
+    authors {
+      name
+    }
+  }
+}
+```
+
+^ What if one the fields is a type, and not a scalar? It's as simple as creating a nested query. Note that authors was a list, but we don't need to denote that, it'll simply fetch this name field for every author.
 
 ---
 
@@ -221,12 +297,23 @@ At this point, if you're reviewing the slides, please check out the example-serv
 ## Mutations
 
 ```ruby
+input BookInput {
+  title: String!
+  authors: [String!]!
+}
+
 type Mutation {
   deleteBook(id: ID!): Book
-  addBook(book: Book): Book
-  addAuthor(author: Author): Author
+  addAuthor(name: String!): Author
+  addBook(book: BookInput!): Book
 }
 ```
+
+^ Now, we're at the second big part of any API worth its salt, the ability to modify data. Can anyone tell me what Mutation is? (conventional, non-required type-def)
+
+^ So what is happening here? Just like the query, we are simply declaring that this Mutation type has some data attributes that will eventually return you some data. Personally, this is where the power of convention really kicks in on GraphQL. The unfortunate nature of contractual obligation is that the fulfiller doesn't have to do what you think it will, as long as it satisfies this contract. REST at least has its various methods to try and enforce good practice, but with GraphQL, it'll be pretty heavily reliant on developer patterns.
+
+^ Again, the same rule of searching by input applies
 
 ---
 
@@ -238,6 +325,60 @@ At this point, if you're reviewing the slides, please check out the example-serv
 
 ## Fragments
 
+```ruby
+fragment BookParts on Book {
+  title
+}
+
+query {
+  getBooks {
+    ...BookParts
+  }
+}
+```
+
+^ We all hate WET code, it's painful having to refactor a drippy, soggy codebase. The same feelings apply to querying, so thankfully GraphQL gives us some great querying options. There are multiple ways to define fragments, but the easiest way is like so, simply declaring the fragment and what fields it asks for. Then we can use it in our queries.
+
+---
+
+[.code-highlight: 1-3]
+
+## Fragments
+
+```ruby
+fragment BookParts on Book {
+  title
+}
+
+query {
+  getBooks {
+    ...BookParts
+  }
+}
+```
+
+^ Firstly, Fragments are declared on types. In this example, we created a new Fragment called BookParts that can be given to any query, and this fragment applies to the Book type. and if that query returns you a Book in some way, it'll use this field as
+
+---
+
+[.code-highlight: 1-3, 6-8]
+
+## Fragments
+
+```ruby
+fragment BookParts on Book {
+  title
+}
+
+query {
+  getBooks {
+    ...BookParts
+  }
+}
+```
+
+^ If a query returns you a Book in some way, it'll include any field in the fragment as part of that query.
+
 ---
 
 ## Live Coding!
@@ -247,6 +388,135 @@ At this point, if you're reviewing the slides, please check out the example-serv
 ---
 
 ## Interfaces
+
+```ruby
+interface Book {
+  title: String!
+  authors: [String!]!
+}
+
+type Fiction implements Book {
+  title: String!
+  authors: [String!]!
+  genre: String!
+}
+
+type NonFiction implements Book {
+  title: String!
+  authors: [String!]!
+  era: String!
+}
+```
+
+^ Interfaces are sort of like contracts... within the contract language. They function in much the same way as the do in many strongly-typed languages, anything that implements an interface must expose all fields as defined by that interface. However, this gives us our first real option to creating generic queries!
+
+---
+
+## Interfaces
+
+```ruby
+interface Book {
+  id: Int!
+  title: String!
+  authors: [String!]!
+}
+
+type Fiction implements Book {...}
+type NonFiction implements Book {...}
+
+type Query {
+  getBookById(id: Int!): Book
+}
+```
+
+^ We can actually use interfaces to write queries for anything that implements said interface. Without the interface, we would have had to done some workaround to expose all the data, like a getFictionById and a getNonFictionById query, but now we can we simply use the interface to write a singular, generic query
+
+^ There is one gotcha when doing this during implementation. Any type implementing an interface will guaranteed have those fields, but there is no guarantee that the type doesn't have more fields. For this reason, it's important we have some way of instructing GraphQL which type is in play for a given piece of data.
+
+^ Can anyone think of why that's important? Because the client cannot know all aspects of the backend data, and since everything in GraphQL is specifically fetched, knowing the type and introspecting on the API is the most straightforward way to know what to ask for.
+
+---
+
+## Consuming Interfaces
+
+```ruby
+interface Book {}
+type Fiction implements Book {...}
+type NonFiction implements Book {...}
+type Query {
+  getBooks: [Book]
+}
+
+query {
+  getBooks {
+    title
+  }
+}
+```
+
+^ Querying by interface is much the same as querying by type, namely that since the interface has a declared set of fields, we can simply ask for any fields available in the interface. But there's a problem here, does anyone see it?
+
+^ Right, what if our search result gives us back a Fiction book? It satisfies the list of Book requirement, but we can't possibly know what other fields there are: after all, we only know that we got a list of Books... Just kidding, there is indeed a way to go that next step.
+
+---
+
+## Live Coding!
+
+At this point, if you're reviewing the slides, please check out the example-server branches to see where we're at. You can always refer back to the master branch for the complete code.
+
+---
+
+## Consuming Interfaces
+
+```ruby
+type Fiction implements Book {
+  # Book fields
+  genre
+}
+type NonFiction implements Book {
+  # Book fields
+  era
+}
+
+query {
+  getBooks {
+    title
+  }
+}
+```
+
+^ If you recall, our Fiction and NonFiction types were very similar, but they had this distinguishing field, genre or era. We need to somehow get those fields from our query. This is where inline fragments come back to play!
+
+---
+
+[.code-highlight: 13-18]
+
+## Interfaces with Fragments
+
+```ruby
+type Fiction implements Book {
+  # Book fields
+  genre
+}
+type NonFiction implements Book {
+  # Book fields
+  era
+}
+
+query {
+  getBooks {
+    title
+    ... on Fiction {
+      genre
+    }
+    ... on NonFiction {
+      era
+    }
+  }
+}
+```
+
+^ This dot notation followed by "on Type" is what we call an inline fragment, you'll notice that this looks very similar to the standard Fragment location. Basically, this is like an in-line if operator in our query. This allows us to write generic queries, but also fetch for fields specific to a type. Hopefully, GraphQL is starting to feel pretty thorough!
 
 ---
 
@@ -258,6 +528,46 @@ At this point, if you're reviewing the slides, please check out the example-serv
 
 ## Unions
 
+```ruby
+type Fiction {
+  title: String!
+  authors: [String!]!
+  genre: String!
+}
+type NonFiction {
+  title: String!
+  authors: [String!]!
+  era: String!
+}
+
+union Book = Fiction | NonFiction
+```
+
+^ We're almost done wrapping up our GraphQL basics. Unions are another way of connecting disparate types. Unlike interfaces, there is no exposure requirement, you're just connecting the types. This does reduce the overall amount of code, but it does have one important downside. Can anyone guess?
+
+---
+
+[.code-highlight: 8]
+
+## Consuming Unions
+
+```ruby
+type Fiction {...}
+type NonFiction {...}
+
+union Book = Fiction | NonFiction
+
+query {
+  getBooks {
+    __typeName
+    ... on Fiction {...}
+    ... on NonFiction {...}
+  }
+}
+```
+
+^ The only built-in type we have to explore is this typename field. This is one of the default GraphQL meta fields available to all queries, so we do get to query by that for our union, but that's it. Everything else needs to be queried on the type.
+
 ---
 
 ## Live Coding!
@@ -266,7 +576,26 @@ At this point, if you're reviewing the slides, please check out the example-serv
 
 ---
 
+## Conclusion
+
+^ Conclusion: Hopefully, that was a quick, clean introduction to the basics of GraphQL! We covered a pretty broad set of topics, but these are all things that pretty much every GraphQL server will be using, and things that you would also need to leverage to create a non-trivial server yourself. To recap what you should focus on...
+
+^ All the mechanics behind GraphQL are pretty fascinating, but the most important thing to learn is the concepts of the SDL. That's your contract and it'll affect the ways you construct both the client and the server.
+
+^ Any questions?
+
+---
+
 ## Resources
 
 [How To GraphQL](https://www.howtographql.com)
+  -> https://www.howtographql.com
+
+[Apollo Server Playground](https://codesandbox.io/s/apollo-server)
+  -> https://codesandbox.io/s/apollo-server
+
+[GraphQL Docs](https://graphql.org)
+  -> https://graphql.org
+
 [GitHub for Slides/Server](https://github.com/kwak123/graphql-basics)
+  -> https://github.com/kwak123/graphql-basics
