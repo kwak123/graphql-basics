@@ -21,11 +21,9 @@ Web[@BigNerdRanch](https://twitter.com/bignerdranch)
 * Too much data
 * Too much configuring
 
-TODO: INSERT GIF
+^ To quickly recap why GraphQL exists, each new technology continues to democratize the web, introducing web apps not just to first-time consumers, but also to first-time developers. This spread is not without cost however.
 
-^ I know I said it'd be different, but we really do have to cover a base or two on why GraphQL is great for the modern web industry. With each new technology, the web continues to democratize, introducing web apps not just to first-time consumers, but also to first-time developers. This spread is not without cost however.
-
-^ I'm sure some of you have seen how big even simple web apps can be with today's client-side frameworks, or even how big JSONs can get with simple REST API calls. Even my first API, I realized at some point, I was passing back JSONs as big as 4-5 MB to a _mobile phone_! Imagine being a developer in a rising country with extremely limited data costs, and discovering that an API you were toying with was costing you a quarter in fees per call, with data you aren't even going to use.
+^ Even simple web apps are huge with today's client-side frameworks, with enormous JSONs can from simple REST API calls. Even my first toy API was sending 4-5 MB to a _mobile phone_! Imagine being a developer in a rising country with extremely limited data costs, and discovering that an API you were trying was costing you a quarter in fees per call, with data you aren't using.
 
 ^ Previous solutions to the above were to try and and reduce data resolution by exposing more and more endpoints, leading to endpoint hell. On top of that, each of these endpoints need documenting, validation checks, pagination, etc, the developer overhead stacks up exponentially.
 
@@ -36,13 +34,13 @@ TODO: INSERT GIF
 * Singular, semi-self-documenting endpoint
 * Built-in validation and response handling
 
-^ Which brings us to some of the best things that GraphQL offers developers. We'll break out of the serious mold now, and just start looking at what we get to work with, and that starts with knowing where GraphQL leaves us.
+^ Which brings us to some of the best things that GraphQL offers developers. We'll break out of the serious mold now, and just start looking at what we get to work with, and that starts with knowing where GraphQL leaves us. First thing's first, what does GraphQL stand for? Query Language, but what exactly does that mean? It's confusing, you imagine it's like SQL, and it kinda is, but really...
 
-^ First thing's first, what does GraphQL stand for? Query Language, but what exactly does that mean? It's confusing, you imagine it's like SQL, and it kinda is, but really, GraphQL is just a way of asking for things explicitly. Now knowing what you want to ask for is a complicated thing. Let's just reflect on that concept. There's two big concerns with getting data in the REST spec, first is having to create new endpoints for any new piece of data, second is all the the validation that has to go in to resolving only what we want if we want that data to be configurable. Thankfully, GraphQL handles both of these big concerns.
+^ GraphQL is just a way of asking for things explicitly, helping to reduce those huge REST JSONs. Now knowing what you want to ask for is a complicated thing. Let's just reflect on that concept. There's two big concerns with getting data in the REST spec, first is having to create new endpoints for new data, second is all the the configuring and validation required if we wanted to resolve only what we want. Thankfully, GraphQL handles both of these big concerns.
 
-^ First, we only have to use one end point now. GraphQL servers will receive and respond along one endpoint. This GraphQL endpoint doesn't need to response to all the various request types, the 2 that you really need to work with are GET and POST requests. Don't worry too much about the self-documenting aspect now, we'll get to that in the live coding bit.
+^ First, we only have to use one end point now. GraphQL servers will receive and respond along one endpoint. This GraphQL endpoint doesn't need to response to all the various request types, the 2 that you really need to work with are GET and POST requests.
 
-^ Second, we get built-in validation and response handling. Specifically, all we need to teach GraphQL how to do is the data should look, GraphQL will take care of parsing responses, validating, and responding to the incoming request.
+^ Second, we get built-in validation and response handling. Specifically, we tell GraphQL how the data should look, GraphQL will take care of parsing responses, validating, and responding to the incoming request.
 
 ^ Personally, I've found it's easier to understand GraphQL by applying it to a simile. The REST spec is sort of like the Dewey decimal system, a great, rigid structure for quickly locating books on a certain topic. Want to add a new topic, you'd need a new number, etc. GraphQL is more like the librarian, you approach GraphQL with your requests, and they make sure it's answered reasonably.
 
@@ -313,7 +311,26 @@ type Mutation {
 
 ^ So what is happening here? Just like the query, we are simply declaring that this Mutation type has some data attributes that will eventually return you some data. Personally, this is where the power of convention really kicks in on GraphQL. The unfortunate nature of contractual obligation is that the fulfiller doesn't have to do what you think it will, as long as it satisfies this contract. REST at least has its various methods to try and enforce good practice, but with GraphQL, it'll be pretty heavily reliant on developer patterns.
 
-^ Again, the same rule of searching by input applies
+^ Again, the same rules of searching for queries applies, variables or inputs can be used with nullability at its core
+
+---
+
+## Consuming Mutations
+
+```ruby
+type Mutation {
+  deleteBook(id: ID!): Book
+}
+
+# On Client
+mutation {
+  deleteBook(id: 1) {
+    title
+  }
+}
+```
+
+^ Consuming mutations are much the same as consuming queries. You call the data attribute with the given variables, then you can parse scalars from the return type on the contract
 
 ---
 
@@ -392,18 +409,18 @@ At this point, if you're reviewing the slides, please check out the example-serv
 ```ruby
 interface Book {
   title: String!
-  authors: [String!]!
+  authors: [Author!]!
 }
 
 type Fiction implements Book {
   title: String!
-  authors: [String!]!
+  authors: [Author!]!
   genre: String!
 }
 
 type NonFiction implements Book {
   title: String!
-  authors: [String!]!
+  authors: [Author!]!
   era: String!
 }
 ```
@@ -418,7 +435,7 @@ type NonFiction implements Book {
 interface Book {
   id: Int!
   title: String!
-  authors: [String!]!
+  authors: [Author!]!
 }
 
 type Fiction implements Book {...}
@@ -430,10 +447,6 @@ type Query {
 ```
 
 ^ We can actually use interfaces to write queries for anything that implements said interface. Without the interface, we would have had to done some workaround to expose all the data, like a getFictionById and a getNonFictionById query, but now we can we simply use the interface to write a singular, generic query
-
-^ There is one gotcha when doing this during implementation. Any type implementing an interface will guaranteed have those fields, but there is no guarantee that the type doesn't have more fields. For this reason, it's important we have some way of instructing GraphQL which type is in play for a given piece of data.
-
-^ Can anyone think of why that's important? Because the client cannot know all aspects of the backend data, and since everything in GraphQL is specifically fetched, knowing the type and introspecting on the API is the most straightforward way to know what to ask for.
 
 ---
 
@@ -456,13 +469,7 @@ query {
 
 ^ Querying by interface is much the same as querying by type, namely that since the interface has a declared set of fields, we can simply ask for any fields available in the interface. But there's a problem here, does anyone see it?
 
-^ Right, what if our search result gives us back a Fiction book? It satisfies the list of Book requirement, but we can't possibly know what other fields there are: after all, we only know that we got a list of Books... Just kidding, there is indeed a way to go that next step.
-
----
-
-## Live Coding!
-
-At this point, if you're reviewing the slides, please check out the example-server branches to see where we're at. You can always refer back to the master branch for the complete code.
+^ Any type implementing an interface will guaranteed have those fields, but there is no guarantee that the implementing type doesn't have more fields. For this reason, it's important we have some way of instructing GraphQL which type is in play for a given piece of data. Because the client cannot know all aspects of the backend data, and since everything in GraphQL is specifically fetched, knowing the type and introspecting on the API is the most straightforward way to know what to ask for.
 
 ---
 
@@ -485,7 +492,7 @@ query {
 }
 ```
 
-^ If you recall, our Fiction and NonFiction types were very similar, but they had this distinguishing field, genre or era. We need to somehow get those fields from our query. This is where inline fragments come back to play!
+^ If you recall, our Fiction and NonFiction types were very similar, but they had this distinguishing field, genre or era. We need to somehow get those fields from our query. This is where fragments come back to play!
 
 ---
 
@@ -529,18 +536,20 @@ At this point, if you're reviewing the slides, please check out the example-serv
 ## Unions
 
 ```ruby
-type Fiction {
-  title: String!
-  authors: [String!]!
-  genre: String!
-}
-type NonFiction {
-  title: String!
-  authors: [String!]!
-  era: String!
+type Author {
+  name: String!
 }
 
-union Book = Fiction | NonFiction
+type Book {
+  title: String!
+  authors: [Author!]!
+}
+
+union SearchResult = Author | Book
+
+type Query {
+  getAll: [SearchResult]
+}
 ```
 
 ^ We're almost done wrapping up our GraphQL basics. Unions are another way of connecting disparate types. Unlike interfaces, there is no exposure requirement, you're just connecting the types. This does reduce the overall amount of code, but it does have one important downside. Can anyone guess?
@@ -552,21 +561,21 @@ union Book = Fiction | NonFiction
 ## Consuming Unions
 
 ```ruby
-type Fiction {...}
-type NonFiction {...}
+type Author {...}
+type Book {...}
 
-union Book = Fiction | NonFiction
+union SearchResult = Author | Book
 
 query {
   getBooks {
-    __typeName
-    ... on Fiction {...}
-    ... on NonFiction {...}
+    __typename
+    ... on Author {...}
+    ... on Book {...}
   }
 }
 ```
 
-^ The only built-in type we have to explore is this typename field. This is one of the default GraphQL meta fields available to all queries, so we do get to query by that for our union, but that's it. Everything else needs to be queried on the type.
+^ The only built-in type we have to explore is this typename field. This is one of the default GraphQL meta fields available to all types, so we do get to query by that for our union, but that's it. Everything else needs to be queried on the type, for instance by inline fragments.
 
 ---
 
